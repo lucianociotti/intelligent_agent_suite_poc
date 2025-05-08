@@ -1,6 +1,8 @@
 # Intelligent Agent Suite PoC
 
 Prueba de Concepto para una Suite de Agentes Inteligentes.
+Este proyecto implementa un Agente de Investigación IA orquestado mediante CrewAI,
+con un backend FastAPI y frontend Streamlit.
 
 ## Configuración Inicial
 
