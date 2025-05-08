@@ -1,10 +1,14 @@
-# Intelligent Agent Suite Poc
+# Intelligent Agent Suite PoC
 
 Prueba de Concepto para una Suite de Agentes Inteligentes.
 
 ## Configuración Inicial
 
-1.  **Clona este repositorio (si aplica).**
+1.  **Clona este repositorio:**
+    ```bash
+    git clone https://github.com/lucianociotti/intelligent_agent_suite_poc.git
+    cd intelligent_agent_suite_poc
+    ```
 2.  **Crea y activa un entorno virtual:**
     ```bash
     python -m venv venv
