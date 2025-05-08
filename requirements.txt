@@ -1,10 +1,29 @@
+# requirements.txt
+
+# Frameworks Web y Servidor
 fastapi
 uvicorn[standard]
-pydantic
-openai
 streamlit
-python-dotenv
+
+# Core AI & CrewAI
+crewai==0.28.8
+crewai-tools==0.1.7
+langchain-openai==0.0.5
+langchain-core==0.1.31
+langchain-community==0.0.28
+openai>=1.3.7,<2.0.0 # Mantener una versión >1 compatible con CrewAI/Langchain
+
+# Pydantic (fijar versión para compatibilidad)
+pydantic==2.6.1
+
+# Persistencia Vectorial
 chromadb
+
+# Servicios Externos (Google Drive)
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
+
+# Utilidades
+python-dotenv
+requests # Para Streamlit llamando a FastAPI
