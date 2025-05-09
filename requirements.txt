@@ -11,7 +11,7 @@ crewai-tools==0.1.7
 langchain-openai==0.0.5
 langchain-core==0.1.31
 langchain-community==0.0.28
-openai>=1.3.7,<2.0.0 # Mantener una versión >1 compatible con CrewAI/Langchain
+openai>=1.3.7,<2.0.0
 
 # Pydantic (fijar versión para compatibilidad)
 pydantic==2.6.1
@@ -24,6 +24,9 @@ google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
 
+# NUEVA Herramienta de Búsqueda
+tavily-python
+
 # Utilidades
 python-dotenv
-requests # Para Streamlit llamando a FastAPI
+requests

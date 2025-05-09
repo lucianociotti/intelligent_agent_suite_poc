@@ -2,59 +2,53 @@
 import os
 from dotenv import load_dotenv
 
-# Carga las variables de entorno del archivo .env que está en la raíz del proyecto
-# (un nivel arriba de 'app', dos niveles arriba de 'core')
-dotenv_path = os.path.join(os.path.dirname(__file__), '..', '..', '.env')
-load_dotenv(dotenv_path=dotenv_path)
+# Asegurar que la carga de .env ocurra ANTES de definir Settings
+# .env debe estar en la raíz del proyecto (dos niveles arriba de 'core')
+project_root_from_config = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+dotenv_path = os.path.join(project_root_from_config, '.env')
+try:
+    load_dotenv(dotenv_path=dotenv_path)
+    print(f"DEBUG config.py: .env cargado desde: {dotenv_path}")
+except Exception as e_dotenv:
+    print(f"WARN config.py: No se pudo cargar .env desde {dotenv_path}. Error: {e_dotenv}")
 
 class Settings:
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
-    
-    # Para Google Drive
-    GOOGLE_APPLICATION_CREDENTIALS: str = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-    GOOGLE_DRIVE_FOLDER_ID: str = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
-    
-    # Directorios (relativos a la raíz del proyecto)
+    # Cargar variables, usar None como default si no existen
+    OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")
+    GOOGLE_APPLICATION_CREDENTIALS: str | None = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    GOOGLE_DRIVE_FOLDER_ID: str | None = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
+    TAVILY_API_KEY: str | None = os.getenv("TAVILY_API_KEY") # <-- Añadido
+
     REPORTS_DIR: str = "reports"
     CHROMA_DB_PATH: str = "chroma_db_store"
 
-    # Validación básica de configuraciones críticas
-    if not OPENAI_API_KEY:
-        print("ADVERTENCIA: La variable de entorno OPENAI_API_KEY no está configurada en .env.")
-        # raise ValueError("La variable de entorno OPENAI_API_KEY no está configurada.") # Podrías hacerlo fallar si prefieres
-    if not GOOGLE_APPLICATION_CREDENTIALS:
-        print("ADVERTENCIA: La variable de entorno GOOGLE_APPLICATION_CREDENTIALS no está configurada en .env.")
-    # No podemos verificar la existencia del archivo aquí de forma fiable si la ruta es solo el nombre,
-    # ya que la 'raíz del proyecto' se determina mejor en tiempo de ejecución desde la raíz.
-    # Esta verificación se hace mejor al instanciar el GDriveService o al inicio de la app.
-    if not GOOGLE_DRIVE_FOLDER_ID:
-        print("ADVERTENCIA: La variable de entorno GOOGLE_DRIVE_FOLDER_ID no está configurada en .env.")
+    # Validaciones/Advertencias al inicio
+    if not OPENAI_API_KEY: print("WARN config.py: OPENAI_API_KEY no configurada en .env.")
+    if not GOOGLE_APPLICATION_CREDENTIALS: print("WARN config.py: GOOGLE_APPLICATION_CREDENTIALS no configurada en .env.")
+    if not GOOGLE_DRIVE_FOLDER_ID: print("WARN config.py: GOOGLE_DRIVE_FOLDER_ID no configurado en .env.")
+    if not TAVILY_API_KEY: print("WARN config.py: TAVILY_API_KEY no configurada en .env.") # <-- Añadido
 
-
+# Instanciar settings DESPUÉS de la definición de la clase
 settings = Settings()
-print(f"DEBUG config.py: Settings cargadas. OPENAI_API_KEY is set: {bool(settings.OPENAI_API_KEY)}")
-print(f"DEBUG config.py: GOOGLE_APPLICATION_CREDENTIALS: {settings.GOOGLE_APPLICATION_CREDENTIALS}")
-print(f"DEBUG config.py: GOOGLE_DRIVE_FOLDER_ID: {settings.GOOGLE_DRIVE_FOLDER_ID}")
 
+# Logging inicial de la configuración cargada (más seguro después de instanciar)
+print(f"DEBUG config.py: Settings loaded.")
+print(f"  - OpenAI Key: {'Sí' if settings.OPENAI_API_KEY else 'No'}")
+print(f"  - GDrive Creds Path: {settings.GOOGLE_APPLICATION_CREDENTIALS or 'No definida'}")
+print(f"  - GDrive Folder ID: {settings.GOOGLE_DRIVE_FOLDER_ID or 'No definido'}")
+print(f"  - Tavily API Key: {'Sí' if settings.TAVILY_API_KEY else 'No'}") # <-- Añadido
 
-# --- Crear directorios si no existen (relativos a la raíz del proyecto) ---
-# Estas rutas se resuelven desde la ubicación de este archivo config.py
-project_root_from_config = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-print(f"DEBUG config.py: Project root (desde config.py) = {project_root_from_config}")
-
-
+# --- Crear directorios si no existen ---
 reports_full_path = os.path.join(project_root_from_config, settings.REPORTS_DIR)
-if not os.path.exists(reports_full_path):
+try:
     os.makedirs(reports_full_path, exist_ok=True)
-    print(f"DEBUG config.py: Directorio de informes creado/verificado en: {reports_full_path}")
+    print(f"DEBUG config.py: Directorio Reports path verificado/creado: {reports_full_path}")
+except OSError as e_dir1:
+     print(f"ERROR config.py: No se pudo crear el directorio de informes {reports_full_path}. Error: {e_dir1}")
 
 chroma_full_path = os.path.join(project_root_from_config, settings.CHROMA_DB_PATH)
-if not os.path.exists(chroma_full_path):
+try:
     os.makedirs(chroma_full_path, exist_ok=True)
-    print(f"DEBUG config.py: Directorio de ChromaDB creado/verificado en: {chroma_full_path}")
-
-# NO establezcas os.environ['GOOGLE_APPLICATION_CREDENTIALS'] aquí globalmente de esta forma.
-# Es mejor que la librería de Google lo resuelva a partir de la variable de entorno
-# o que se pase explícitamente al crear las credenciales si es necesario.
-# Si el archivo gdrive_credentials.json está en la raíz Y GOOGLE_APPLICATION_CREDENTIALS="gdrive_credentials.json"
-# la librería cliente de Google debería encontrarlo si el directorio de trabajo es la raíz del proyecto.
+    print(f"DEBUG config.py: Directorio ChromaDB path verificado/creado: {chroma_full_path}")
+except OSError as e_dir2:
+     print(f"ERROR config.py: No se pudo crear el directorio de ChromaDB {chroma_full_path}. Error: {e_dir2}")

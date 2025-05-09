@@ -1,44 +1,46 @@
-# Intelligent Agent Suite PoC - v0.3
+# Intelligent Agent Suite PoC - v0.4.0
 
-Prueba de Concepto (PoC) para una suite de agentes inteligentes colaborativos, diseñados para automatizar tareas de investigación, marketing y análisis.
+Prueba de Concepto (PoC) para una suite de agentes inteligentes colaborativos, diseñados para automatizar tareas de investigación y marketing.
 
 **Arquitectura Principal:**
 *   **Backend:** API RESTful con FastAPI.
 *   **Frontend:** Interfaz de usuario con Streamlit.
 *   **Orquestación de Agentes:** CrewAI.
-*   **Modelos IA:** Principalmente OpenAI (GPT para texto, DALL-E opcional para imágenes).
+*   **Modelos IA:** OpenAI GPT-3.5-Turbo (para texto). *(Próximamente DALL-E para imágenes).*
 *   **Búsqueda Web:** Tavily Search API.
 *   **Almacenamiento Persistente:**
-    *   Informes: Google Drive.
-    *   Memoria Vectorial (resúmenes/metadatos): ChromaDB (local).
-*   **Gestión de Dependencias:** Pip y `requirements.txt`.
+    *   Informes (Investigación): Google Drive.
+    *   Memoria Vectorial (resúmenes/metadatos de investigación): ChromaDB (local).
 
 ---
 
-## Funcionalidades Implementadas (v0.3)
+## Funcionalidades Implementadas (v0.4.0)
 
-*   **Flujo de Investigación + Edición:**
-    1.  Un **Agente Investigador** (`researcher_agent`) recibe un *tema* y opcionalmente *contenido adicional*.
-    2.  Utiliza la herramienta **Tavily Search** para buscar información actualizada en la web sobre el tema.
-    3.  Analiza los resultados de la búsqueda y el contenido adicional (si se proporcionó) usando su LLM base y la herramienta `content_analyzer`.
-    4.  Genera un **borrador** de informe en formato Markdown incluyendo un Resumen Ejecutivo y Vías de Acción Sugeridas.
-    5.  Un **Agente Editor** (`editor_agent`) recibe el borrador del investigador.
-    6.  Utiliza su LLM base para **revisar y pulir** el informe, mejorando claridad, gramática y estilo (sin alterar el contenido fundamental).
-    7.  El **informe final editado** es el resultado del proceso.
-*   **Integración con Servicios Externos:**
-    *   El informe final se guarda automáticamente en una carpeta designada de **Google Drive**.
-    *   Un resumen y metadatos del informe se guardan en una base de datos vectorial local **ChromaDB** para permitir búsquedas de similitud posteriores ("Memoria").
-*   **Interfaz de Usuario:**
-    *   Una interfaz básica en **Streamlit** permite:
-        *   Iniciar nuevas investigaciones (proporcionando tema y opcionalmente contenido).
-        *   Ver el informe final generado.
-        *   Consultar la memoria (ChromaDB) por investigaciones anteriores relevantes.
+### 1. Flujo de Investigación + Edición
+*   Un **Agente Investigador** (`researcher_agent`) recibe un *tema* y opcionalmente *contenido adicional*.
+*   Utiliza la herramienta **Tavily Search** para buscar información actualizada en la web.
+*   Analiza los resultados de la búsqueda y el contenido adicional (si se proporcionó) usando su LLM base y la herramienta **`ContentAnalysisTool`** para un análisis más profundo.
+*   Genera un **borrador** de informe en formato Markdown (Resumen Ejecutivo y Vías de Acción).
+*   Un **Agente Editor** (`editor_agent`) recibe el borrador y lo **revisa/pule** para mejorar claridad y estilo.
+*   El **informe final editado** se guarda en Google Drive y se referencia en ChromaDB.
+
+### 2. Flujo de Creación de Contenido de Marketing
+*   Un **Agente Creador de Contenido de Marketing** (`marketing_content_agent`) recibe un *tema/producto*, una *plataforma* destino (ej. Instagram) y *contexto adicional* opcional.
+*   Utiliza las siguientes herramientas basadas en LLM secuencialmente:
+    1.  **`Generador de Ideas de Marketing`**: Brainstorming de conceptos, tipos de post, hashtags y CTAs.
+    2.  **`Redactor de Posts para Redes Sociales`**: Crea el texto del post adaptado a la plataforma, usando las ideas generadas.
+    3.  **`Generador de Prompts para DALL-E`**: Sugiere un prompt detallado para crear una imagen visualmente alineada con el post.
+*   El resultado es un conjunto de ideas, el texto del post y un prompt para imagen. *(La generación de imagen se añadirá próximamente).*
+
+### Características Comunes
+*   **Interfaz en Streamlit:** Permite iniciar los flujos y ver los resultados.
+*   **Memoria (Investigación):** Los informes de investigación se pueden buscar por similitud.
 
 ---
 
 ## Configuración del Entorno Local
 
-Sigue estos pasos para poner en marcha el proyecto en tu máquina:
+Sigue estos pasos para poner en marcha el proyecto:
 
 1.  **Clona este repositorio:**
     ```bash
@@ -46,8 +48,7 @@ Sigue estos pasos para poner en marcha el proyecto en tu máquina:
     cd intelligent_agent_suite_poc
     ```
 
-2.  **Crea y activa un entorno virtual:**
-    *Se recomienda Python 3.10 o superior.*
+2.  **Crea y activa un entorno virtual Python (v3.10+ recomendado):**
     ```bash
     python -m venv venv
     # Windows:
@@ -55,82 +56,66 @@ Sigue estos pasos para poner en marcha el proyecto en tu máquina:
     # macOS/Linux:
     source venv/bin/activate
     ```
-    *Verás `(venv)` al inicio de tu prompt.*
 
-3.  **Instala las dependencias:**
-    *Asegúrate de que tu archivo `requirements.txt` contenga las versiones fijadas (como `crewai==0.28.8`, `pydantic==2.6.1`, etc.) que resolvieron los conflictos.*
+3.  **Instala/Actualiza Pip e Instala Dependencias:**
     ```bash
+    python -m pip install --upgrade pip
     pip install -r requirements.txt
     ```
-    *(Opcional recomendado)* Actualiza pip: `python -m pip install --upgrade pip`
+    *(Asegúrate de que `requirements.txt` tenga las versiones que resolvieron los conflictos: `crewai==0.28.8`, `crewai-tools==0.1.7`, `langchain-core==0.1.31`, `langchain-community==0.0.28`, `pydantic==2.6.1`, etc.)*
 
-4.  **Configura las Variables de Entorno:**
-    *   Copia el archivo `.env.example` a un nuevo archivo llamado `.env` en la raíz del proyecto.
-        ```bash
-        # Windows:
-        copy .env.example .env
-        # macOS/Linux:
-        cp .env.example .env
-        ```
-    *   **Edita el archivo `.env`** y añade tus claves y IDs reales:
-        ```env
-        OPENAI_API_KEY="sk-..." # Tu clave de API de OpenAI
-        GOOGLE_APPLICATION_CREDENTIALS="gdrive_credentials.json" # Nombre (o ruta) de tu archivo de credenciales JSON
-        GOOGLE_DRIVE_FOLDER_ID="..." # El ID de la carpeta en Google Drive para guardar informes
-        TAVILY_API_KEY="tvly-..." # Tu clave de API de Tavily Search
-        ```
-    *   **¡Importante!** Asegúrate de que el archivo `.env` esté listado en tu `.gitignore`.
+4.  **Configura las Variables de Entorno (`.env`):**
+    *   Copia `.env.example` a `.env`.
+    *   Edita `.env` y añade tus claves/IDs reales para:
+        *   `OPENAI_API_KEY="sk-..."`
+        *   `GOOGLE_APPLICATION_CREDENTIALS="gdrive_credentials.json"`
+        *   `GOOGLE_DRIVE_FOLDER_ID="..."`
+        *   `TAVILY_API_KEY="tvly-..."`
+    *   Asegúrate de que el archivo `gdrive_credentials.json` (ver paso siguiente) esté en la raíz del proyecto y que `.env` esté en `.gitignore`.
 
 5.  **Configuración de Google Drive API (Cuenta de Servicio):**
-    *   Si aún no lo has hecho, sigue estos pasos cruciales:
-        1.  Ve a [Google Cloud Console](https://console.cloud.google.com/) y selecciona/crea un proyecto.
+    *   (Si aún no lo has hecho)
+        1.  Crea un proyecto en [Google Cloud Console](https://console.cloud.google.com/).
         2.  Habilita la **Google Drive API**.
-        3.  Ve a "IAM y administración" > "Cuentas de servicio" y **Crea una Cuenta de Servicio**.
-        4.  **Descarga la clave** de esta cuenta en formato **JSON**.
-        5.  **Renombra el archivo JSON descargado** a `gdrive_credentials.json` (o el nombre que pusiste en `.env`) y **colócalo en la raíz de este proyecto**. (¡Asegúrate de que esté en `.gitignore`!).
-        6.  Crea/elige una carpeta en tu Google Drive personal para los informes. Obtén su **ID de Carpeta** (la parte final de la URL) y ponlo en `GOOGLE_DRIVE_FOLDER_ID` en tu `.env`.
-        7.  **COMPARTE** esa carpeta de Google Drive con la **dirección de correo electrónico de la cuenta de servicio** que creaste (ej. `nombre-cuenta@tu-proyecto.iam.gserviceaccount.com`), dándole permisos de **"Editor"**.
+        3.  Crea una **Cuenta de Servicio** (IAM y Admin > Cuentas de servicio).
+        4.  Descarga su **clave JSON**, renómbrala a `gdrive_credentials.json` y colócala en la raíz del proyecto.
+        5.  Obtén el **ID de la Carpeta** de Drive para los informes y configúralo en `.env`.
+        6.  **Comparte** esa carpeta de Drive con el email de la cuenta de servicio (con permisos de "Editor").
 
 6.  **Configuración de Tavily Search API:**
-    *   Ve a [Tavily.com](https://tavily.com/), regístrate y obtén tu API Key.
-    *   Añade la clave a tu archivo `.env` bajo la variable `TAVILY_API_KEY`.
+    *   Regístrate en [Tavily.com](https://tavily.com/) y obtén tu API Key.
+    *   Añádela a `TAVILY_API_KEY` en `.env`.
 
 ---
 
 ## Ejecución de la Aplicación PoC
 
-Necesitarás dos terminales separadas, ambas con el entorno virtual (`venv`) activado y en la raíz del proyecto (`intelligent_agent_suite_poc/`).
+Necesitarás dos terminales (con `venv` activado y en la raíz del proyecto).
 
-1.  **Terminal 1: Iniciar Backend (FastAPI con Uvicorn)**
+1.  **Terminal 1: Backend (FastAPI + Uvicorn)**
     ```bash
     uvicorn app.backend.main:app --reload --port 8000
     ```
-    *   Observa la salida. Busca `INFO: Application startup complete.` y asegúrate de que no haya errores críticos durante la inicialización de los servicios (GDrive, ChromaDB) o la carga de los agentes/crews.
+    *   Verifica `INFO: Application startup complete.` y la carga correcta de agentes/servicios en los logs.
 
-2.  **Terminal 2: Iniciar Frontend (Streamlit)**
+2.  **Terminal 2: Frontend (Streamlit)**
     ```bash
     streamlit run frontend/streamlit_app.py
     ```
-    *   Esto debería abrir automáticamente la interfaz web en tu navegador (`http://localhost:8501`).
+    *   Accede a `http://localhost:8501`.
 
 3.  **Uso:**
-    *   Usa la pestaña "🔎 Nueva Investigación" en la interfaz de Streamlit.
-    *   Proporciona un "Tema Principal".
-    *   *(Opcional)* Proporciona "Contenido Base (Input)" si quieres que se analice junto con la búsqueda web.
-    *   Haz clic en "🚀 Iniciar Investigación y Generar Informe".
-    *   Observa la salida en la interfaz y el informe generado (enlace a Google Drive).
-    *   Revisa los logs de Uvicorn (Terminal 1) para ver la actividad detallada de los agentes de CrewAI.
-    *   Usa la pestaña "📚 Consultar Memoria" para buscar informes anteriores guardados en ChromaDB.
+    *   **Investigación:** Usa la pestaña "🔎 Investigación". Proporciona tema y (opcionalmente) contenido base.
+    *   **Marketing:** Usa la pestaña "📢 Marketing Contenido". Proporciona tema, plataforma y (opcionalmente) contexto.
+    *   **Memoria:** Usa la pestaña "📚 Memoria" para buscar informes de investigación.
 
 ---
 
-## Próximos Pasos Planificados
+## Próximos Pasos Planificados (v0.5+)
 
-*   Implementación del Agente de Marketing de Contenidos.
-*   Implementación del Agente de Estrategia de Marketing.
-*   Integración de análisis de competencia (scraping/APIs).
-*   Publicación/Programación en redes sociales.
-*   Mejoras en Logging, manejo de errores y UI.
-*   Autenticación de usuarios.
+*   Integración de generación de imágenes con DALL-E en el flujo de Marketing.
+*   Refinamiento de la calidad y profundidad de la investigación (tuning de prompts y herramientas).
+*   Desarrollo de Agente de Estrategia de Marketing (análisis de competencia).
+*   Mejoras en Logging, UI, y posible contenerización.
 
 ---
