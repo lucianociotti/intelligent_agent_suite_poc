@@ -25,7 +25,7 @@ available_marketing_tools = []
 # 1. Cargar Herramienta de Análisis de Contenido (Clase + Instancia)
 try:
     # Importar la CLASE BaseTool y nuestra Clase custom
-    from langchain_core.tools import BaseTool
+    from crewai.tools import BaseTool
     from app.agents_crewai.tools.research_tools import ContentAnalysisTool
 
     if issubclass(ContentAnalysisTool, BaseTool): # Verificar herencia
@@ -44,10 +44,10 @@ except Exception as e_cat_inst:
 
 # 2. Cargar e Instanciar Tavily Search Tool
 try:
-    from langchain_community.tools.tavily_search import TavilySearchResults
+    from crewai_tools import TavilySearchTool
     from app.core.config import settings
     if settings and settings.TAVILY_API_KEY:
-        tavily_search_tool = TavilySearchResults(max_results=5, name="Tavily Search Results") # Añadir nombre explícito
+        tavily_search_tool = TavilySearchTool(max_results=5) # Añadir nombre explícito
         available_researcher_tools.append(tavily_search_tool)
         print(f"DEBUG crew_agents.py: INSTANCIA '{tavily_search_tool.name}' creada y añadida.")
     else: print("WARN crew_agents.py: TAVILY_API_KEY ausente, Tavily tool no creada.")

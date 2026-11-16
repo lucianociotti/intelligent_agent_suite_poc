@@ -62,7 +62,7 @@ Sigue estos pasos para poner en marcha el proyecto:
     python -m pip install --upgrade pip
     pip install -r requirements.txt
     ```
-    *(Asegúrate de que `requirements.txt` tenga las versiones que resolvieron los conflictos: `crewai==0.28.8`, `crewai-tools==0.1.7`, `langchain-core==0.1.31`, `langchain-community==0.0.28`, `pydantic==2.6.1`, etc.)*
+    *(`requirements.txt` ya usa versiones actualizadas de `crewai`/`crewai-tools` 1.x, que no dependen de `langchain`. Requiere Python 3.10 a 3.13, recomendado 3.11 o superior. Probado: instalación, importación de módulos y armado de agentes con Python 3.10; no se probó contra las APIs reales.)*
 
 4.  **Configura las Variables de Entorno (`.env`):**
     *   Copia `.env.example` a `.env`.

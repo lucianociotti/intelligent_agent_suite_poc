@@ -1,4 +1,6 @@
 # requirements.txt
+# Dependencias actualizadas (noviembre 2026) para corregir vulnerabilidades conocidas.
+# crewai 1.x ya no usa langchain. Requiere Python 3.10 a 3.13 (recomendado 3.11 o superior).
 
 # Frameworks Web y Servidor
 fastapi
@@ -6,25 +8,20 @@ uvicorn[standard]
 streamlit
 
 # Core AI & CrewAI
-crewai==0.28.8
-crewai-tools==0.1.7
-langchain-openai==0.0.5
-langchain-core==0.1.31
-langchain-community==0.0.28
-openai>=1.3.7,<2.0.0
-
-# Pydantic (fijar versión para compatibilidad)
-pydantic==2.6.1
+crewai>=1.15,<2
+crewai-tools>=1.15,<2
+openai>=2.0,<3
+pydantic>=2.6,<3
 
 # Persistencia Vectorial
-chromadb
+chromadb>=1.0,<2
 
 # Servicios Externos (Google Drive)
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
 
-# NUEVA Herramienta de Búsqueda
+# Herramienta de Busqueda
 tavily-python
 
 # Utilidades

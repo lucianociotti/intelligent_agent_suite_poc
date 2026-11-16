@@ -1,8 +1,8 @@
 # app/agents_crewai/tools/research_tools.py
 # VERSIÓN COMPLETA Y CORRECTA - 10 MAYO (TypeError OpenAI y Prompt Restaurado)
 
-from langchain_core.tools import BaseTool
-from pydantic.v1 import BaseModel, Field
+from crewai.tools import BaseTool
+from pydantic import BaseModel, Field
 import openai
 import logging
 
@@ -25,7 +25,7 @@ except Exception as e_conf:
     logger.error(f"ResearchTools: Excepción config API Key OpenAI: {e_conf}")
 
 class ContentAnalysisToolInput(BaseModel):
-    """Inputs para ContentAnalysisTool. Usa Pydantic v1."""
+    """Inputs para ContentAnalysisTool. Usa Pydantic v2."""
     topic: str = Field(..., description="Tema principal que contextualiza el análisis.")
     content_to_analyze: str = Field(..., min_length=50, description="Texto detallado a analizar para el informe.")
 

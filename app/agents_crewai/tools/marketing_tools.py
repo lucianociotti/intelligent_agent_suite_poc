@@ -3,10 +3,10 @@
 
 # Importar el decorador '@tool'
 try:
-    from crewai_tools import tool
+    from crewai.tools import tool
     print("DEBUG marketing_tools.py: Decorador '@tool' importado OK.")
 except ImportError as e:
-     print(f"ERROR CRITICO marketing_tools.py: Fallo al importar '@tool' desde 'crewai_tools'. Error: {e}")
+     print(f"ERROR CRITICO marketing_tools.py: Fallo al importar '@tool' desde 'crewai.tools'. Error: {e}")
      # Decorador dummy para que el archivo cargue pero las tools fallen si se usan
      def tool(*args, **kwargs):
          def decorator(func):
@@ -20,8 +20,8 @@ except ImportError as e:
 
 # Otros imports necesarios
 import openai
-# Pydantic V1 para schema inferido si @tool lo necesita (no lo usamos explícitamente ahora)
-from pydantic.v1 import BaseModel, Field
+# Pydantic V2 para schema inferido si @tool lo necesita (no lo usamos explícitamente ahora)
+from pydantic import BaseModel, Field
 import logging
 
 logger = logging.getLogger(__name__)
